@@ -5,21 +5,18 @@ on:
     branches:
       - main
 
-# 2026년 6월 변경안에 맞춰 Node.js 24 환경을 강제로 사용하도록 설정합니다.
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository code
-      # Node 24를 지원하는 최신 버전의 액션으로 업그레이드합니다.
-      uses: actions/checkout@v4 
+      # Node 24 환경을 완벽하게 네이티브로 지원하는 최신 checkout 버전입니다.
+      uses: actions/checkout@v4
 
     - name: Executing remote ssh commands using ssh-key
-      uses: appleboy/ssh-action@v1.0.3
+      # SSH 접속용 패키지도 최신 Node 규격에 맞게 버전을 올려줍니다.
+      uses: appleboy/ssh-action@v1.2.0
       with:
         host: ${{ secrets.BASTION_HOST }}
         username: ${{ secrets.BASTION_USERNAME }}
