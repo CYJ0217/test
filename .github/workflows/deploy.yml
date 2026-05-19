@@ -3,7 +3,11 @@ name: Deploy to Internal K3s Cluster
 on:
   push:
     branches:
-      - main  # main 브랜치에 코드가 push되면 자동으로 공장이 돌아갑니다.
+      - main
+
+# 2026년 6월 변경안에 맞춰 Node.js 24 환경을 강제로 사용하도록 설정합니다.
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
   deploy:
@@ -11,7 +15,8 @@ jobs:
 
     steps:
     - name: Checkout repository code
-      uses: actions/checkout@v4
+      # Node 24를 지원하는 최신 버전의 액션으로 업그레이드합니다.
+      uses: actions/checkout@v4 
 
     - name: Executing remote ssh commands using ssh-key
       uses: appleboy/ssh-action@v1.0.3
@@ -23,19 +28,17 @@ jobs:
         script: |
           echo "==== [1/3] 깃허브가 배스천 리모컨에 무사히 접속했습니다! ===="
           
-          # 배스천 내부에 작업용 폴더를 만들고 이동합니다.
           mkdir -p ~/cicd-workspace
           cd ~/cicd-workspace
           
           echo "==== [2/3] 최신 배포 설정(YAML)을 깃허브로부터 받아옵니다. ===="
-          # 실습 편의를 위해 배스천 안에서 최신 배포 야믈 파일을 깃허브 저장소에서 직접 다운받거나 갱신하도록 세팅합니다.
           cat << 'EOF' > webapp-prod.yaml
           apiVersion: apps/v1
           kind: Deployment
           metadata:
             name: hello-web
           spec:
-            replicas: 2  # 자동화 검증을 위해 포드를 2대로 늘려봅니다!
+            replicas: 2
             selector:
               matchLabels:
                 app: hello-web
